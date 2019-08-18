@@ -1,5 +1,6 @@
-import {Component, ViewChild, AfterViewInit, ElementRef} from '@angular/core';
+import {Component} from '@angular/core';
 import * as L from 'leaflet';
+import {StationInformation} from '../station_information';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +18,17 @@ export class AppComponent {
     zoom: 14,
     center: L.latLng(40.7583757, -73.9736026),
   };
-  layers = [L.circle([40.7583757, -73.9736026], {radius: 20, fillOpacity: 1})];
+  layers = [] as L.Circle[];
 
-  constructor() {}
+  constructor() {
+    this.fetchStations();
+  }
+
+  async fetchStations() {
+    const response = await fetch('/assets/station_information.json');
+    const json = await response.text();
+    const info = JSON.parse(json) as StationInformation;
+    const options = {radius: 20, fillOpacity: 1};
+    this.layers = info.data.stations.map(station => L.circle([station.lat, station.lon], options));
+  }
 }
