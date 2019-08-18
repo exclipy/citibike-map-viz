@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import * as L from 'leaflet';
 import {StationInformation} from '../station_information';
+import {StationData} from '../station_data';
 
 @Component({
   selector: 'app-root',
@@ -25,10 +26,16 @@ export class AppComponent {
   }
 
   async fetchStations() {
-    const response = await fetch('/assets/station_information.json');
-    const json = await response.text();
-    const info = JSON.parse(json) as StationInformation;
+    const info = await this.fetchJson<StationInformation>('/assets/station_information.json');
+    const data = await this.fetchJson<StationData>('/assets/data.json');
     const options = {radius: 20, fillOpacity: 1};
     this.layers = info.data.stations.map(station => L.circle([station.lat, station.lon], options));
+  }
+
+  private async fetchJson<T>(url: string) {
+    const stationsResponse = await fetch(url);
+    const stationsJson = await stationsResponse.text();
+    const info = JSON.parse(stationsJson) as T;
+    return info;
   }
 }
