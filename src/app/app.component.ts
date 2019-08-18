@@ -14,14 +14,10 @@ export class AppComponent {
         attribution: '...',
       }),
     ],
-    zoom: 5,
-    center: L.latLng(46.879966, -121.726909),
+    zoom: 14,
+    center: L.latLng(40.7583757, -73.9736026),
   };
-  layers = [
-    L.circle([46.95, -122], {radius: 5000}),
-    L.polygon([[46.8, -121.85], [46.92, -121.92], [46.87, -121.8]]),
-    L.marker([46.879966, -121.726909]),
-  ];
+  layers = [L.circle([40.7583757, -73.9736026], {radius: 20, fillOpacity: 1})];
 
   constructor() {}
 }
