@@ -1,8 +1,9 @@
 import {Component} from '@angular/core';
+import {scale} from 'chroma-js';
 import * as L from 'leaflet';
-import {StationInformation} from '../station_information';
-import {StationData} from '../station_data';
 import {flatMap} from 'lodash';
+import {StationData} from '../station_data';
+import {StationInformation} from '../station_information';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,7 @@ export class AppComponent {
     layers: [
       L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
-        attribution: '...',
+        opacity: 0.6,
       }),
     ],
     zoom: 14,
@@ -47,16 +48,16 @@ export class AppComponent {
       }
     });
 
+    const colorScale = scale(['red', 'yellow', 'green']);
+
     this.layers = joinedLatestStations.map(station => {
-      const l = Math.floor(
-        (station.num_bikes_available /
-          (station.num_bikes_available + station.num_docks_available)) *
-          255,
-      );
+      const l =
+        station.num_bikes_available / (station.num_bikes_available + station.num_docks_available);
+      const color = colorScale(l).hex();
       return L.circle([station.lat, station.lon], {
         radius: 40,
         fillOpacity: 1,
-        fillColor: `rgb(${l}, ${l}, ${l})`,
+        fillColor: color,
         stroke: false,
       });
     });
