@@ -1,4 +1,4 @@
-<mat-toolbar
-  ><mat-slider min="0" [max]="sliderMax" step="1" value="0" (change)="onSlide()"></mat-slider
-></mat-toolbar>
+<mat-toolbar>
+  <mat-slider min="0" [max]="sliderMax" step="1" value="0" (input)="onSlide($event)"></mat-slider>
+</mat-toolbar>
 <div id="map" leaflet [leafletOptions]="options" [leafletLayers]="layers"></div>
