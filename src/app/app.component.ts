@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import * as L from 'leaflet';
 import {StationInformation} from '../station_information';
 import {StationData} from '../station_data';
+import {flatMap} from 'lodash';
 
 @Component({
   selector: 'app-root',
@@ -28,8 +29,37 @@ export class AppComponent {
   async fetchStations() {
     const info = await this.fetchJson<StationInformation>('/assets/station_information.json');
     const data = await this.fetchJson<StationData>('/assets/data.json');
-    const options = {radius: 20, fillOpacity: 1};
-    this.layers = info.data.stations.map(station => L.circle([station.lat, station.lon], options));
+
+    const stationMap = new Map(info.data.stations.map(station => [station.station_id, station]));
+    const latestStations = Object.entries(data)[0][1];
+    const joinedLatestStations = flatMap(latestStations, station => {
+      const stationInfo = stationMap.get(station.station_id);
+      if (stationInfo) {
+        return [
+          {
+            ...station,
+            lat: stationInfo.lat,
+            lon: stationInfo.lon,
+          },
+        ];
+      } else {
+        return [];
+      }
+    });
+
+    this.layers = joinedLatestStations.map(station => {
+      const l = Math.floor(
+        (station.num_bikes_available /
+          (station.num_bikes_available + station.num_docks_available)) *
+          255,
+      );
+      return L.circle([station.lat, station.lon], {
+        radius: 40,
+        fillOpacity: 1,
+        fillColor: `rgb(${l}, ${l}, ${l})`,
+        stroke: false,
+      });
+    });
   }
 
   private async fetchJson<T>(url: string) {
