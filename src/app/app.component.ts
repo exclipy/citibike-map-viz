@@ -44,9 +44,9 @@ export class AppComponent {
 
   async fetchStations() {
     const info = await this.fetchJson<StationInformation.StationInformation>(
-      '/assets/station_information.json',
+      'assets/station_information.json',
     );
-    const data = await this.fetchJson<StationData.StationData>('/assets/data.json');
+    const data = await this.fetchJson<StationData.StationData>('assets/data.json');
     if (!data.length) {
       return;
     }
