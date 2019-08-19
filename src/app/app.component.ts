@@ -5,6 +5,7 @@ import {flatMap} from 'lodash';
 import * as StationData from '../station_data';
 import * as StationInformation from '../station_information';
 import {MatSliderChange} from '@angular/material/slider';
+import * as moment from 'moment-timezone';
 
 @Component({
   selector: 'app-root',
@@ -24,6 +25,7 @@ export class AppComponent {
   };
   layers = [] as L.Circle[];
   slices = [] as L.Circle[][];
+  times = [] as string[];
   sliderMax = 0;
   displayedTime = '';
 
@@ -37,6 +39,7 @@ export class AppComponent {
 
   handleSlide(value: number) {
     this.layers = this.slices[value];
+    this.displayedTime = this.times[value];
   }
 
   async fetchStations() {
@@ -51,6 +54,12 @@ export class AppComponent {
     const stationMap = new Map(info.data.stations.map(station => [station.station_id, station]));
 
     this.slices = data.map(d => this.toCircles(d.data, stationMap));
+    this.times = data.map(d => {
+      return moment
+        .unix(+d.scrape_time)
+        .tz('America/New_York')
+        .format('hA, ddd MMM D YYYY');
+    });
     this.handleSlide(0);
   }
 
