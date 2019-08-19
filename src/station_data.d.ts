@@ -10,4 +10,4 @@ export interface Station {
   is_installed: number;
 }
 
-export type StationData = {[scrape_time: string]: Array<Station>};
+export type StationData = Array<{scrape_time: string; data: Array<Station>}>;

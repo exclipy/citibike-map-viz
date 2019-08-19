@@ -32,7 +32,7 @@ export class AppComponent {
     const data = await this.fetchJson<StationData>('/assets/data.json');
 
     const stationMap = new Map(info.data.stations.map(station => [station.station_id, station]));
-    const latestStations = Object.entries(data)[0][1];
+    const latestStations = data[0].data;
     const joinedLatestStations = flatMap(latestStations, station => {
       const stationInfo = stationMap.get(station.station_id);
       if (stationInfo) {
