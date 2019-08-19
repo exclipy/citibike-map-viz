@@ -22,15 +22,21 @@ export class AppComponent {
     center: L.latLng(40.7583757, -73.9736026),
   };
   layers = [] as L.Circle[];
+  sliderMax = 0;
 
   constructor() {
     this.fetchStations();
   }
 
+  onSlide() {}
+
   async fetchStations() {
     const info = await this.fetchJson<StationInformation>('/assets/station_information.json');
     const data = await this.fetchJson<StationData>('/assets/data.json');
-
+    if (!data.length) {
+      return;
+    }
+    this.sliderMax = data.length - 1;
     const stationMap = new Map(info.data.stations.map(station => [station.station_id, station]));
     const latestStations = data[0].data;
     const joinedLatestStations = flatMap(latestStations, station => {
