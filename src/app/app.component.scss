@@ -1,6 +1,3 @@
-.mat-slider {
-  flex: 1;
-}
 :host {
   position: fixed;
   top: 0;
@@ -10,10 +7,17 @@
   display: flex;
   flex-direction: column;
 }
-#map {
+.mat-toolbar {
+  justify-content: center;
+}
+.mat-slider {
   flex: 1;
+  max-width: 500px;
 }
 #time {
   flex: 0 0 12em;
   text-align: right;
+}
+#map {
+  flex: 1;
 }
