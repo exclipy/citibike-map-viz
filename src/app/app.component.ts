@@ -18,7 +18,7 @@ import * as StationInformation from '../station_information';
 export class AppComponent {
   options = {
     layers: [
-      L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         opacity: 0.6,
       }),
