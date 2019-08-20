@@ -1,5 +1,25 @@
-<mat-toolbar>
-  <mat-slider min="0" [max]="sliderMax" step="1" value="0" (input)="onSlide($event)"></mat-slider>
-  <div id="time">{{ displayedTime }}</div>
+<mat-toolbar *ngIf="isWidescreen$ | async">
+  <mat-slider
+    min="0"
+    [max]="sliderMax"
+    step="1"
+    [value]="sliderValue"
+    (input)="onSlide($event)"
+  ></mat-slider>
+  <div id="right-text">{{ displayedTime ? displayedTime : 'Loading...' }}</div>
+</mat-toolbar>
+<mat-toolbar *ngIf="!(isWidescreen$ | async)">
+  <mat-toolbar-row>
+    <div>{{ displayedTime ? displayedTime : 'Loading...' }}</div>
+  </mat-toolbar-row>
+  <mat-toolbar-row>
+    <mat-slider
+      min="0"
+      [max]="sliderMax"
+      step="1"
+      [value]="sliderValue"
+      (input)="onSlide($event)"
+    ></mat-slider>
+  </mat-toolbar-row>
 </mat-toolbar>
 <div id="map" leaflet [leafletOptions]="options" [leafletLayers]="layers"></div>
