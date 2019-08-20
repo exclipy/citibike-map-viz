@@ -46,7 +46,9 @@ export class AppComponent {
     const info = await this.fetchJson<StationInformation.StationInformation>(
       'assets/station_information.json',
     );
-    const data = await this.fetchJson<StationData.StationData>('assets/data.json');
+    const data = await this.fetchJson<StationData.StationData>(
+      'https://citibike-analysis-results.storage.googleapis.com/data.json',
+    );
     if (!data.length) {
       return;
     }
@@ -97,7 +99,7 @@ export class AppComponent {
   }
 
   private async fetchJson<T>(url: string) {
-    const stationsResponse = await fetch(url);
+    const stationsResponse = await fetch(url, {cache: 'no-store'});
     const stationsJson = await stationsResponse.text();
     const info = JSON.parse(stationsJson) as T;
     return info;
