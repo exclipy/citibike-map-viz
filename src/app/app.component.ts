@@ -48,7 +48,7 @@ export class AppComponent {
     zoom: 14,
     center: L.latLng(40.7227015, -73.9978813),
   };
-  layers = [] as L.Layer[];
+  currentSliceIndex = 0;
   slices = [] as L.LayerGroup[];
   times = [] as string[];
   sliderValue = 0;
@@ -68,7 +68,7 @@ export class AppComponent {
   }
 
   handleSlide(value: number) {
-    this.layers = [this.slices[this.sliderMax - value]];
+    this.currentSliceIndex = this.sliderMax - value;
     this.displayedTime = this.times[this.sliderMax - value];
   }
 

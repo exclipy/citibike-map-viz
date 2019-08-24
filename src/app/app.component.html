@@ -1,4 +1,8 @@
-<div id="map" leaflet [leafletOptions]="options" [leafletLayers]="layers"></div>
+<div id="map" leaflet [leafletOptions]="options">
+  <div *ngFor="let l of slices; let i = index">
+    <div *ngIf="currentSliceIndex === i" [leafletLayer]="l"></div>
+  </div>
+</div>
 <mat-toolbar *ngIf="isWidescreen$ | async">
   <mat-slider
     min="0"
