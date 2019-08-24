@@ -1,3 +1,4 @@
+<div id="map" leaflet [leafletOptions]="options" [leafletLayers]="layers"></div>
 <mat-toolbar *ngIf="isWidescreen$ | async">
   <mat-slider
     min="0"
@@ -22,4 +23,3 @@
     ></mat-slider>
   </mat-toolbar-row>
 </mat-toolbar>
-<div id="map" leaflet [leafletOptions]="options" [leafletLayers]="layers"></div>
