@@ -13,6 +13,7 @@ import * as StationInformation from '../station_information';
 interface DataSource {
   url: string;
   timeFormatter: (scrapeTime: string) => string;
+  sliderToIndex: (sliderValue: number, sliderMax: number) => number;
 }
 
 const directDataSource: DataSource = {
@@ -22,14 +23,18 @@ const directDataSource: DataSource = {
       .unix(+timestamp)
       .tz('America/New_York')
       .format('hA, ddd MMM D YYYY'),
+  sliderToIndex: (sliderValue, sliderMax) => sliderMax - sliderValue,
 };
+
+const NYC_HOURS_OFFSET = -4; // Offset from UTC when the date is unknown
 
 const averageWeekdayDataSource: DataSource = {
   url: 'https://citibike-analysis-results.storage.googleapis.com/data_average_weekday.json',
   timeFormatter: time =>
     moment(time, 'HH:mm')
-      .subtract(4, 'hours')
+      .add(NYC_HOURS_OFFSET, 'hours')
       .format('HH:mm'),
+  sliderToIndex: (sliderValue, sliderMax) => (sliderValue - NYC_HOURS_OFFSET * 6) % sliderMax,
 };
 
 @Component({
@@ -38,6 +43,8 @@ const averageWeekdayDataSource: DataSource = {
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+  dataSource: DataSource = averageWeekdayDataSource;
+
   options = {
     layers: [
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -57,7 +64,7 @@ export class AppComponent {
   isWidescreen$: Observable<boolean>;
 
   constructor(private breakpointObserver: BreakpointObserver) {
-    this.fetchStations(directDataSource);
+    this.fetchStations(this.dataSource);
     this.isWidescreen$ = this.breakpointObserver
       .observe(['(min-width: 700px)'])
       .pipe(map(state => state.matches));
@@ -68,8 +75,8 @@ export class AppComponent {
   }
 
   handleSlide(value: number) {
-    this.currentSliceIndex = this.sliderMax - value;
-    this.displayedTime = this.times[this.sliderMax - value];
+    this.currentSliceIndex = this.dataSource.sliderToIndex(value, this.sliderMax);
+    this.displayedTime = this.times[this.currentSliceIndex];
   }
 
   async fetchStations(dataSource: DataSource) {
