@@ -48,8 +48,8 @@ export class AppComponent {
     zoom: 14,
     center: L.latLng(40.7227015, -73.9978813),
   };
-  layers = [] as L.Circle[];
-  slices = [] as L.Circle[][];
+  layers = [] as L.Layer[];
+  slices = [] as L.LayerGroup[];
   times = [] as string[];
   sliderValue = 0;
   sliderMax = 0;
@@ -68,7 +68,7 @@ export class AppComponent {
   }
 
   handleSlide(value: number) {
-    this.layers = this.slices[this.sliderMax - value];
+    this.layers = [this.slices[this.sliderMax - value]];
     this.displayedTime = this.times[this.sliderMax - value];
   }
 
@@ -82,7 +82,7 @@ export class AppComponent {
     }
     const stationMap = new Map(info.data.stations.map(station => [station.station_id, station]));
 
-    this.slices = data.map(d => this.toCircles(d.data, stationMap));
+    this.slices = data.map(d => L.layerGroup(this.toCircles(d.data, stationMap)));
     this.times = data.map(d => dataSource.timeFormatter(d.scrape_time));
     this.sliderMax = data.length - 1;
     this.sliderValue = this.sliderMax;
@@ -92,7 +92,7 @@ export class AppComponent {
   private toCircles(
     latestStations: StationData.Station[],
     stationMap: Map<string, StationInformation.Station>,
-  ) {
+  ): L.Circle[] {
     const joinedLatestStations = flatMap(latestStations, (station: StationData.Station) => {
       const stationInfo = stationMap.get(station.station_id);
       if (stationInfo) {
