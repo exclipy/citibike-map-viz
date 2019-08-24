@@ -10,6 +10,28 @@ import {map} from 'rxjs/operators';
 import * as StationData from '../station_data';
 import * as StationInformation from '../station_information';
 
+interface DataSource {
+  url: string;
+  timeFormatter: (scrapeTime: string) => string;
+}
+
+const directDataSource: DataSource = {
+  url: 'https://citibike-analysis-results.storage.googleapis.com/data.json',
+  timeFormatter: timestamp =>
+    moment
+      .unix(+timestamp)
+      .tz('America/New_York')
+      .format('hA, ddd MMM D YYYY'),
+};
+
+const averageWeekdayDataSource: DataSource = {
+  url: 'https://citibike-analysis-results.storage.googleapis.com/data_average_weekday.json',
+  timeFormatter: time =>
+    moment(time, 'HH:mm')
+      .subtract(4, 'hours')
+      .format('HH:mm'),
+};
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -35,7 +57,7 @@ export class AppComponent {
   isWidescreen$: Observable<boolean>;
 
   constructor(private breakpointObserver: BreakpointObserver) {
-    this.fetchStations();
+    this.fetchStations(directDataSource);
     this.isWidescreen$ = this.breakpointObserver
       .observe(['(min-width: 700px)'])
       .pipe(map(state => state.matches));
@@ -50,25 +72,18 @@ export class AppComponent {
     this.displayedTime = this.times[this.sliderMax - value];
   }
 
-  async fetchStations() {
+  async fetchStations(dataSource: DataSource) {
     const info = await this.fetchJson<StationInformation.StationInformation>(
       'assets/station_information.json',
     );
-    const data = await this.fetchJson<StationData.StationData>(
-      'https://citibike-analysis-results.storage.googleapis.com/data.json',
-    );
+    const data = await this.fetchJson<StationData.StationData>(dataSource.url);
     if (!data.length) {
       return;
     }
     const stationMap = new Map(info.data.stations.map(station => [station.station_id, station]));
 
     this.slices = data.map(d => this.toCircles(d.data, stationMap));
-    this.times = data.map(d => {
-      return moment
-        .unix(+d.scrape_time)
-        .tz('America/New_York')
-        .format('hA, ddd MMM D YYYY');
-    });
+    this.times = data.map(d => dataSource.timeFormatter(d.scrape_time));
     this.sliderMax = data.length - 1;
     this.sliderValue = this.sliderMax;
     this.handleSlide(this.sliderValue);
