@@ -123,7 +123,7 @@ export class AppComponent {
   }
 
   private async fetchJson<T>(url: string) {
-    const stationsResponse = await fetch(url, {cache: 'no-store'});
+    const stationsResponse = await fetch(url);
     const stationsJson = await stationsResponse.text();
     const info = JSON.parse(stationsJson) as T;
     return info;
