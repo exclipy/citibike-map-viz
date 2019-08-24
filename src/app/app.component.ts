@@ -46,7 +46,7 @@ export class AppComponent {
       }),
     ],
     zoom: 14,
-    center: L.latLng(40.7583757, -73.9736025),
+    center: L.latLng(40.7227015, -73.9978813),
   };
   layers = [] as L.Circle[];
   slices = [] as L.Circle[][];
